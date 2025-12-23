@@ -1,0 +1,76 @@
+# Ignore binários compilados
+dcm
+dcm.exe
+install
+install.exe
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+*.exe~
+*.test
+*.out
+
+# Ignore diretórios do Go
+/vendor/
+bin/
+dist/
+build/
+
+# Ignore cache do Go
+.cache/
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.jmx
+
+# Logs
+*.log
+logs/
+
+# Dependências
+/vendor/
+go.sum
+
+# OS específicos
+.DS_Store
+.env.local
+.env.*.local
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+temp/
+*.bak
+*.orig
+
+# Build artifacts
+*.tar.gz
+*.zip
+
+# Coverage
+coverage.out
+coverage.html
+
+# Secrets
+.env
+.env.local
+*.pem
+*.key
+
+# IDE específicas
+*.iml
+.gradle/
+local.properties
