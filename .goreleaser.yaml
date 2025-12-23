@@ -1,0 +1,39 @@
+version: 2
+project_name: dcm
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: dcm
+    main: ./cmd/main.go
+    binary: dcm
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+
+release:
+  github:
+    owner: DisneyJr
+    name: dcm
