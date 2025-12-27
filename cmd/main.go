@@ -3,9 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 
-	"github.com/Disneyjr/dcm/internal/comands"
+	"github.com/Disneyjr/dcm/internal/commands"
 	"github.com/Disneyjr/dcm/internal/workspace"
 	"github.com/Disneyjr/dcm/utils"
 	"github.com/Disneyjr/dcm/utils/messages"
@@ -21,9 +20,9 @@ func main() {
 	}
 	ws := workspace.NewWorkspace()
 	if err := workspace.LoadWorkspace(ws); err != nil {
-		if args[0] != "install" {
+		if args[0] != "version" {
 			fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-			os.Exit(1)
+			return
 		}
 	}
 
@@ -31,47 +30,72 @@ func main() {
 	case "up":
 		if len(args) < 2 {
 			fmt.Println(utils.Colorize("red", "❌ Especifique um projeto ou grupo"))
-			os.Exit(1)
+			return
 		}
 
 		projectOrGroup := args[1]
+		extraArgs := []string{}
+		for i := 2; i < len(args); i++ {
+			if args[i] == "--build" {
+				extraArgs = append(extraArgs, "--build")
+			}
+			if args[i] == "--dry-run" {
+				commands.DryRun = true
+			}
+		}
 
-		if groupErr := comands.UpGroup(ws, projectOrGroup); groupErr == nil {
+		if groupErr := commands.UpGroup(ws, projectOrGroup, extraArgs...); groupErr == nil {
 			return
 		}
 
 	case "down":
-		if err := comands.DownAll(ws); err != nil {
+		if err := commands.DownAll(ws); err != nil {
 			fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-			os.Exit(1)
+			return
 		}
 
 	case "restart":
-		if err := comands.RestartAll(ws); err != nil {
+		if err := commands.RestartAll(ws); err != nil {
 			fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-			os.Exit(1)
+			return
 		}
 
 	case "logs":
-		if err := comands.LogsAll(ws); err != nil {
+		if err := commands.LogsAll(ws); err != nil {
 			fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-			os.Exit(1)
+			return
 		}
 
 	case "status":
-		if err := comands.StatusAll(ws); err != nil {
+		if err := commands.StatusAll(ws); err != nil {
 			fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-			os.Exit(1)
+			return
 		}
 
 	case "list":
-		comands.ListAll(ws)
+		commands.ListAll(ws)
+
+	case "inspect":
+		if len(args) < 2 {
+			fmt.Println(utils.Colorize("red", "❌ Especifique um grupo para inspecionar"))
+			return
+		}
+		commands.InspectGroup(ws, args[1])
+
+	case "validate":
+		commands.ValidateWorkspace(ws)
+
+	case "init":
+		if err := commands.InitWorkspace(); err != nil {
+			fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
+			return
+		}
 
 	case "version":
 		messages.VersionMessage()
 
 	default:
 		fmt.Printf("%s Comando desconhecido: %s\n", utils.Colorize("yellow", "⚠️"), args[0])
-		os.Exit(1)
+		return
 	}
 }

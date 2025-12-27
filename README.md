@@ -22,6 +22,7 @@ dcm up dev
 ## Características
 
 - 🚀 **Comando único** - Inicie todos os serviços de uma vez
+- ⚡ **Concorrência** - Inicialização paralela de serviços (super rápido!)
 - 📦 **Sem dependências** - Binário standalone
 - 🎯 **Grupos** - Organize serviços em combinações
 - 🖥️ **Cross-platform** - Linux, macOS, Windows
@@ -43,25 +44,41 @@ double-click install.exe
 
 ### 2. Configurar
 
-Crie `workspace.json` na raiz do projeto:
+Navegue até a pasta raiz do seu projeto e execute:
+
+```bash
+dcm init
+```
+
+Isso criará um `workspace.json`. Veja como é simples organizar:
 
 ```json
 {
   "version": "1.0",
   "projects": {
-    "database": { "path": "./infra/db", "type": "simple" },
-    "api": { "path": "./services/api", "type": "simple" },
-    "web": { "path": "./services/web", "type": "simple" }
+    "db": { "path": "./infra/db" },
+    "api": { "path": "./services/api" }
   },
   "groups": {
-    "dev": { "services": ["database", "api", "web"] }
+    "dev": { 
+      "services": ["db", "api"],
+      "parallel": false 
+    },
+    "full": {
+      "extends": "dev",
+      "services": ["web"]
+    }
   }
 }
 ```
 
+> [!TIP]
+> Use `"parallel": false` quando a ordem de inicialização importar (ex: subir o banco antes da API).
+
 ### 3. Usar
 
 ```bash
+dcm init      # Cria configuração inicial
 dcm list      # Ver projetos e grupos
 dcm up dev    # Iniciar grupo completo
 dcm down      # Parar tudo
@@ -72,6 +89,7 @@ dcm down      # Parar tudo
 **Iniciar um grupo:**
 ```bash
 dcm up dev          # Todos os serviços do grupo 'dev'
+dcm up dev --build  # Força o rebuild das imagens
 ```
 
 **Gerenciar serviços:**
@@ -79,24 +97,6 @@ dcm up dev          # Todos os serviços do grupo 'dev'
 dcm logs            # Ver logs de tudo
 dcm status          # Status dos containers
 dcm restart         # Reiniciar tudo
-```
-
-## Estrutura do Projeto
-
-```
-dcm/
-├── cmd/                           # Código-fonte
-│   ├── main.go                   # CLI principal (dcm)
-│   └── install.go                # Instalador
-├── utils/                        # Utilitários
-├── .github/workflows/            # CI/CD
-│   └── release.yml
-├── .goreleaser.yaml             # Config para releases automáticos
-├── .gitignore                   # Ignore patterns
-├── DEVELOPMENT.md               # Guia para desenvolvedores
-├── README.md                    # Este arquivo
-├── LICENSE
-└── go.mod / go.sum             # Dependências Go
 ```
 
 ## Contribuindo

@@ -26,12 +26,15 @@ func PrintHelp() {
 	fmt.Printf("%s DCM - Docker Compose Manager\n\n", utils.Colorize("cyan", "📌"))
 	fmt.Printf("Versão: %s\n\n", Version)
 	fmt.Println("Uso:")
-	fmt.Println("  dcm up <grupo>                - Inicia grupo")
+	fmt.Println("  dcm up <grupo> [--build] [--dry-run] - Inicia grupo")
 	fmt.Println("  dcm down                      - Para todos os serviços")
 	fmt.Println("  dcm restart                   - Reinicia todos")
 	fmt.Println("  dcm logs                      - Mostra logs")
 	fmt.Println("  dcm status                    - Status dos serviços")
 	fmt.Println("  dcm list                      - Lista projetos e grupos")
+	fmt.Println("  dcm inspect <grupo>           - Detalha composição de um grupo")
+	fmt.Println("  dcm validate                  - Valida o arquivo workspace.json")
+	fmt.Println("  dcm init                      - Cria configuração inicial")
 	fmt.Println("  dcm version                   - Mostra versão")
 }
 
