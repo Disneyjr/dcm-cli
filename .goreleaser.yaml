@@ -1,5 +1,5 @@
 version: 2
-project_name: dcm
+project_name: dcm-cli
 
 before:
   hooks:
@@ -59,4 +59,4 @@ checksum:
 release:
   github:
     owner: Disneyjr
-    name: dcm
+    name: dcm-cli
