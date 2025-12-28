@@ -2,6 +2,8 @@ package utils
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"runtime"
 )
 
@@ -22,4 +24,13 @@ func Colorize(color, text string) string {
 
 func GetSystemInfo() string {
 	return fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
+}
+func IsAdmin() bool {
+	if runtime.GOOS != "windows" {
+		return os.Geteuid() == 0
+	}
+	cmd := exec.Command("net", "session")
+	cmd.Stdout = nil
+	cmd.Stderr = nil
+	return cmd.Run() == nil
 }

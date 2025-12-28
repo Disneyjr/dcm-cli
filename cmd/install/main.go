@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 
@@ -31,7 +30,7 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 	if len(args) == 0 {
-		if !isAdmin() {
+		if !utils.IsAdmin() {
 			fmt.Println("📌 DCM - Instalador Global")
 			fmt.Println("❌ ERRO: Necessário privilégios de Administrador")
 			fmt.Println("💡 Clique direito no install.exe > 'Executar como administrador'")
@@ -71,22 +70,4 @@ func main() {
 
 		messages.InstallSuccessful()
 	}
-
-	switch args[0] {
-	case "uninstall":
-		commands.Uninstall()
-		return
-	default:
-		fmt.Printf("%s Comando desconhecido: %s\n", utils.Colorize("yellow", "⚠️"), args[0])
-		return
-	}
-}
-func isAdmin() bool {
-	if runtime.GOOS != "windows" {
-		return true
-	}
-	cmd := exec.Command("net", "session")
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	return cmd.Run() == nil
 }

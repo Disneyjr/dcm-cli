@@ -7,7 +7,7 @@ before:
 
 builds:
   - id: dcm
-    main: ./cmd/main.go
+    main: ./cmd/dcm
     binary: dcm
     env:
       - CGO_ENABLED=0
@@ -18,10 +18,23 @@ builds:
     goarch:
       - amd64
       - arm64
-
+    
   - id: install
-    main: ./cmd/install.go
+    main: ./cmd/install
     binary: install
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: uninstall
+    main: ./cmd/uninstall
+    binary: uninstall
     env:
       - CGO_ENABLED=0
     goos:
@@ -34,7 +47,7 @@ builds:
 
 archives:
   - id: full
-    ids: [dcm, install]
+    ids: [dcm, install, uninstall]
     strip_binary_directory: false
     formats: [ 'zip' ]
     name_template: '{{ .ProjectName }}_full_{{ .Os }}_{{ .Arch }}_{{ .Version }}'

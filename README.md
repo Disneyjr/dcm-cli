@@ -27,22 +27,63 @@ dcm up dev
 - 🎯 **Grupos** - Organize serviços em combinações
 - 🖥️ **Cross-platform** - Linux, macOS, Windows
 
-## Quick Start
+## Instalação
 
-### 1. Instalar
+### Passo a Passo
 
+1. **Baixar o DCM**
+   ```bash
+   # Acesse: https://github.com/Disneyjr/dcm/releases
+   # Baixe o binário para o seu sistema operacional
+   ```
+
+2. **Executar o Instalador como Administrador**
+   
+   **Windows:**
+   - Clique com o botão direito em `install.exe`
+   - Selecione "Executar como administrador"
+   - Aguarde a confirmação de instalação bem-sucedida
+   
+   **Linux/macOS:**
+   ```bash
+   chmod +x install
+   sudo ./install
+   ```
+
+3. **Verificar a Instalação**
+   ```bash
+   dcm version
+   ```
+
+4. **Inicializar seu Workspace**
+   
+   Navegue até a pasta raiz do seu projeto:
+   ```bash
+   cd /caminho/do/seu/projeto
+   dcm init
+   ```
+
+5. **Validar a Configuração**
+   ```bash
+   dcm validate
+   ```
+
+### Desinstalar
+
+Para remover o DCM do sistema:
+
+**Windows:**
+- Clique com o botão direito em `uninstall.exe`
+- Selecione "Executar como administrador"
+
+**Linux/macOS:**
 ```bash
-# Baixe o binário em: https://github.com/Disneyjr/dcm/releases
-
-# Linux/macOS
-chmod +x install
-./install
-
-# Windows
-double-click install.exe
+sudo ./uninstall
 ```
 
-### 2. Configurar
+---
+
+### Configurar
 
 Navegue até a pasta raiz do seu projeto e execute:
 
@@ -78,25 +119,60 @@ Isso criará um `workspace.json`. Veja como é simples organizar:
 ### 3. Usar
 
 ```bash
-dcm init      # Cria configuração inicial
-dcm list      # Ver projetos e grupos
-dcm up dev    # Iniciar grupo completo
-dcm down      # Parar tudo
+dcm init           # Cria configuração inicial
+dcm validate       # Valida o workspace.json
+dcm list           # Ver projetos e grupos
+dcm up dev         # Iniciar grupo completo
+dcm down           # Parar tudo
+dcm down dev       # Parar apenas o grupo 'dev'
+dcm down -v        # Parar tudo e remover volumes
+dcm down dev -v    # Parar grupo 'dev' e remover volumes
 ```
 
-## Exemplos Rápidos
+## Comandos Disponíveis
 
-**Iniciar um grupo:**
+### Gerenciamento de Serviços
+
+**Iniciar serviços:**
 ```bash
 dcm up dev          # Todos os serviços do grupo 'dev'
 dcm up dev --build  # Força o rebuild das imagens
 ```
 
-**Gerenciar serviços:**
+**Parar serviços:**
 ```bash
-dcm logs            # Ver logs de tudo
+dcm down            # Para todos os serviços
+dcm down dev        # Para apenas o grupo 'dev'
+dcm down -v         # Para todos e remove volumes
+dcm down dev -v     # Para grupo 'dev' e remove volumes
+```
+
+**Outras operações:**
+```bash
+dcm restart         # Reiniciar todos os serviços
+dcm logs            # Ver logs de todos os serviços
 dcm status          # Status dos containers
-dcm restart         # Reiniciar tudo
+dcm inspect dev     # Inspecionar configuração do grupo
+```
+
+## Exemplos Práticos
+
+**Desenvolvimento local:**
+```bash
+# Iniciar apenas o que você precisa
+dcm up backend
+
+# Parar e limpar tudo quando terminar
+dcm down -v
+```
+
+**Testar um grupo específico:**
+```bash
+# Subir grupo de testes
+dcm up test --build
+
+# Parar apenas esse grupo
+dcm down test
 ```
 
 ## Contribuindo

@@ -132,17 +132,65 @@ func UpGroup(workspace *workspace.Workspace, groupName string, extraArgs ...stri
 	return nil
 }
 
-func DownAll(workspace *workspace.Workspace) error {
-	fmt.Printf("%s Parando todos os serviços...\n\n", utils.Colorize("cyan", "⏹️"))
+func DownAll(workspace *workspace.Workspace, removeVolumes bool) error {
+	volumeMsg := ""
+	if removeVolumes {
+		volumeMsg = " e removendo volumes"
+	}
+	fmt.Printf("%s Parando todos os serviços%s...\n\n", utils.Colorize("cyan", "⏹️"), volumeMsg)
 
 	for projectName, project := range workspace.Projects {
 		fmt.Printf("%s Parando %s\n", utils.Colorize("blue", "🚀"), projectName)
-		if err := runCommand(project.Path, "docker-compose", []string{"down"}, true); err != nil {
+
+		args := []string{"down"}
+		if removeVolumes {
+			args = append(args, "-v")
+		}
+
+		if err := runCommand(project.Path, "docker-compose", args, true); err != nil {
 			fmt.Printf("%s Erro em %s: %v\n", utils.Colorize("red", "❌"), projectName, err)
 		}
 	}
 
 	fmt.Printf("\n%s ✨ Todos parados!\n\n", utils.Colorize("green", ""))
+	return nil
+}
+
+func DownGroup(workspace *workspace.Workspace, groupName string, removeVolumes bool) error {
+	services, _, err := resolveGroupServices(workspace, groupName, make(map[string]bool))
+	if err != nil {
+		return err
+	}
+
+	volumeMsg := ""
+	if removeVolumes {
+		volumeMsg = " e removendo volumes"
+	}
+	fmt.Printf("%s Parando grupo '%s'%s...\n\n", utils.Colorize("cyan", "⏹️"), groupName, volumeMsg)
+
+	for _, serviceSpec := range services {
+		parts := strings.Split(serviceSpec, ":")
+		projectName := parts[0]
+
+		project, exists := workspace.Projects[projectName]
+		if !exists {
+			fmt.Printf("%s Projeto '%s' não encontrado\n", utils.Colorize("red", "❌"), projectName)
+			continue
+		}
+
+		fmt.Printf("%s Parando %s\n", utils.Colorize("blue", "🚀"), projectName)
+
+		args := []string{"down"}
+		if removeVolumes {
+			args = append(args, "-v")
+		}
+
+		if err := runCommand(project.Path, "docker-compose", args, true); err != nil {
+			fmt.Printf("%s Erro em %s: %v\n", utils.Colorize("red", "❌"), projectName, err)
+		}
+	}
+
+	fmt.Printf("\n%s ✨ Grupo '%s' parado!\n\n", utils.Colorize("green", ""), groupName)
 	return nil
 }
 
