@@ -6,14 +6,12 @@ import (
 
 	"github.com/Disneyjr/dcm/internal/commands"
 	"github.com/Disneyjr/dcm/internal/workspace"
-	"github.com/Disneyjr/dcm/utils"
 	"github.com/Disneyjr/dcm/utils/messages"
 )
 
-func handleUpCommand(ws *workspace.Workspace, args []string) {
+func handleUpCommand(ws *workspace.Workspace, args []string) error {
 	if len(args) < 2 {
-		fmt.Println(utils.Colorize("red", "❌ Especifique um projeto ou grupo"))
-		return
+		return fmt.Errorf("especifique um projeto ou grupo")
 	}
 
 	projectOrGroup := args[1]
@@ -27,12 +25,10 @@ func handleUpCommand(ws *workspace.Workspace, args []string) {
 		}
 	}
 
-	if groupErr := commands.UpGroup(ws, projectOrGroup, extraArgs...); groupErr == nil {
-		return
-	}
+	return commands.UpGroup(ws, projectOrGroup, extraArgs...)
 }
 
-func handleDownCommand(ws *workspace.Workspace, args []string) {
+func handleDownCommand(ws *workspace.Workspace, args []string) error {
 	removeVolumes := false
 	groupName := ""
 
@@ -47,62 +43,45 @@ func handleDownCommand(ws *workspace.Workspace, args []string) {
 
 	// If group is specified, use DownGroup
 	if groupName != "" {
-		if err := commands.DownGroup(ws, groupName, removeVolumes); err != nil {
-			fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-			return
-		}
-		return
+		return commands.DownGroup(ws, groupName, removeVolumes)
 	}
 
 	// Otherwise, use DownAll
-	if err := commands.DownAll(ws, removeVolumes); err != nil {
-		fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-		return
-	}
+	return commands.DownAll(ws, removeVolumes)
 }
 
-func handleRestartCommand(ws *workspace.Workspace) {
-	if err := commands.RestartAll(ws); err != nil {
-		fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-		return
-	}
+func handleRestartCommand(ws *workspace.Workspace) error {
+	return commands.RestartAll(ws)
 }
 
-func handleLogsCommand(ws *workspace.Workspace) {
-	if err := commands.LogsAll(ws); err != nil {
-		fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-		return
-	}
+func handleLogsCommand(ws *workspace.Workspace) error {
+	return commands.LogsAll(ws)
 }
 
-func handleStatusCommand(ws *workspace.Workspace) {
-	if err := commands.StatusAll(ws); err != nil {
-		fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-		return
-	}
+func handleStatusCommand(ws *workspace.Workspace) error {
+	return commands.StatusAll(ws)
 }
 
-func handleListCommand(ws *workspace.Workspace) {
+func handleListCommand(ws *workspace.Workspace) error {
 	commands.ListAll(ws)
+	return nil
 }
 
-func handleInspectCommand(ws *workspace.Workspace, args []string) {
+func handleInspectCommand(ws *workspace.Workspace, args []string) error {
 	if len(args) < 2 {
-		fmt.Println(utils.Colorize("red", "❌ Especifique um grupo para inspecionar"))
-		return
+		return fmt.Errorf("especifique um grupo para inspecionar")
 	}
 	commands.InspectGroup(ws, args[1])
+	return nil
 }
 
-func handleValidateCommand(ws *workspace.Workspace) {
+func handleValidateCommand(ws *workspace.Workspace) error {
 	commands.ValidateWorkspace(ws)
+	return nil
 }
 
-func handleInitCommand() {
-	if err := commands.InitWorkspace(); err != nil {
-		fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-		return
-	}
+func handleInitCommand() error {
+	return commands.InitWorkspace()
 }
 
 func handleVersionCommand() {

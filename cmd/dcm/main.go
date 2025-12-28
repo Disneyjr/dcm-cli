@@ -18,53 +18,55 @@ func main() {
 		return
 	}
 
-	if args[0] == "version" {
-		handleVersionCommand()
-		return
-	}
-
-	if args[0] == "init" {
-		handleInitCommand()
-		return
-	}
-
-	ws := workspace.NewWorkspace()
-	if err := workspace.LoadWorkspace(ws); err != nil {
+	if err := runDcm(args); err != nil {
 		fmt.Printf("%s %v\n", utils.Colorize("red", "❌"), err)
-		return
+		messages.ExitMessage()
 	}
+}
 
-	if args[0] == "validate" {
-		handleValidateCommand(ws)
-		return
+func runDcm(args []string) error {
+	var ws *workspace.Workspace
+	// Comandos que não precisam de workspace
+	if args[0] != "version" && args[0] != "init" {
+		ws = workspace.NewWorkspace()
+		if err := workspace.LoadWorkspace(ws); err != nil {
+			return err
+		}
 	}
-
-	defer messages.ExitMessage()
 
 	switch args[0] {
+	case "version":
+		handleVersionCommand()
+		return nil
+
+	case "init":
+		return handleInitCommand()
+
+	case "validate":
+		return handleValidateCommand(ws)
+
 	case "up":
-		handleUpCommand(ws, args)
+		return handleUpCommand(ws, args)
 
 	case "down":
-		handleDownCommand(ws, args)
+		return handleDownCommand(ws, args)
 
 	case "restart":
-		handleRestartCommand(ws)
+		return handleRestartCommand(ws)
 
 	case "logs":
-		handleLogsCommand(ws)
+		return handleLogsCommand(ws)
 
 	case "status":
-		handleStatusCommand(ws)
+		return handleStatusCommand(ws)
 
 	case "list":
-		handleListCommand(ws)
+		return handleListCommand(ws)
 
 	case "inspect":
-		handleInspectCommand(ws, args)
+		return handleInspectCommand(ws, args)
 
 	default:
-		fmt.Printf("%s Comando desconhecido: %s\n", utils.Colorize("yellow", "⚠️"), args[0])
-		return
+		return fmt.Errorf("comando desconhecido: %s", args[0])
 	}
 }
